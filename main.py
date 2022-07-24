@@ -3,8 +3,10 @@ import shutil
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from docx2pdf import convert
+from dotenv import load_dotenv
 
 # authenticate Google Drive
+print('Authenticate Google...')
 gauth = GoogleAuth()
 gauth.LoadCredentialsFile("mycreds.txt")
 if gauth.credentials is None:
@@ -16,12 +18,14 @@ else:
 gauth.SaveCredentialsFile("mycreds.txt")
 
 # connect to Google Drive and download my resume
+print('Connecting Google Drive...')
 drive = GoogleDrive(gauth)
-file_id = '1H0Xmx5m0L-15cfpBJT30_BV8ZE-YzO29'
-file = drive.CreateFile({'id': file_id})
+load_dotenv()
+file = drive.CreateFile({'id': os.environ.get('FILE_ID')})
 file.GetContentFile('Chergang Chang.docx')
-
+print('File downloaded.')
 # convert docx to pdf
+print('Converting to PDF...')
 convert("Chergang Chang.docx", "Chergang Chang.pdf")
 
 # copy my resumes(.docx & .pdf) to resume folder
@@ -32,10 +36,12 @@ website_path = r'D:\Codes\VSCode\portfolio\src\assets\\'
 file_docx = 'Chergang Chang.docx'
 file_pdf = 'Chergang Chang.pdf'
 
+print('Move to target folders...')
 shutil.move(src_path+file_docx, resume_path+file_docx)
 shutil.move(src_path+file_pdf, website_path+file_pdf)
 
 
+print('Performing git commands...')
 # perform git commit command to change resume file on github
 os.chdir('D:\Codes\VSCode\portfolio')
 os.system(r'git add .')
